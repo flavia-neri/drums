@@ -62,9 +62,17 @@ export default {
       },
       playSound(sound){
            let audioElement = document.querySelector(`#${sound}`);
+           let keyElement = document.querySelector(`div[data-key='${sound}']`);
            if(audioElement){
-             console.log(audioElement);
-                audioElement.play();
+             audioElement.currentTime = 0;
+             audioElement.play();
+            }
+            if(keyElement){
+              keyElement.classList.add("active");
+
+              setTimeout(() => {
+                keyElement.classList.remove("active");
+              }, 200)
             }
       }
   },
@@ -108,9 +116,10 @@ export default {
       &:hover {
         background-color: rgba(48, 48, 48, 0.2);
       }
-      &:active {
-        transform: scale(1.1);
-      }
+    }
+    .active {
+      background-color: rgba(48, 48, 48, 0.2);
+      transform: scale(1.1);
     }
   }
   .composition-container {
