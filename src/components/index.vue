@@ -2,25 +2,29 @@
   <section class="drum-container">
     <h1>BATERIA</h1>
     <div class="keys">
-      <div class="key" v-for="key in keys" :key="key" :data-key="key.id">
+      <div class="key" v-for="key in keys" :key="key" :data-key="key.id" @click="playSound(key.id)">
         {{ key.letter }}
       </div>
     </div>
     <div class="composition-container">
       <form>
-        <input type="text" placeholder="Faça uma composição aqui..." />
-        <button>TOCAR</button>
+        <input
+          type="text"
+          ref="input"
+          placeholder="Faça uma composição aqui..."
+        />
+        <button type="button" @click="composer()">TOCAR</button>
       </form>
     </div>
     <h5>Flávia Neri</h5>
+    <h4>Desafio 7 dias por Bonieky Lacerda | B7web</h4>
 
     <audio
       v-for="audio in audios"
       :key="audio.id"
-      :id="audio.id"
+      :ref="audio.id"
       :src="audio.src"
-    >
-    </audio>
+    ></audio>
   </section>
 </template>
 
@@ -42,7 +46,7 @@ export default {
       ],
       audios: [
         { id: "keyq", src: require("../assets/sounds/keyq.wav") },
-        { id: "keyw", src: require("../assets/sounds/keyw.wav")},
+        { id: "keyw", src: require("../assets/sounds/keyw.wav") },
         { id: "keye", src: require("../assets/sounds/keye.wav") },
         { id: "keya", src: require("../assets/sounds/keya.wav") },
         { id: "keys", src: require("../assets/sounds/keys.wav") },
@@ -53,28 +57,44 @@ export default {
       ],
     };
   },
-  created: function(){
-      window.addEventListener('keyup', this.keyup);
+  created: function() {
+    document.addEventListener("keyup", this.keyup);
   },
   methods: {
-      keyup(event){
-          this.playSound(event.code.toLowerCase());
-      },
-      playSound(sound){
-           let audioElement = document.querySelector(`#${sound}`);
-           let keyElement = document.querySelector(`div[data-key='${sound}']`);
-           if(audioElement){
-             audioElement.currentTime = 0;
-             audioElement.play();
-            }
-            if(keyElement){
-              keyElement.classList.add("active");
-
-              setTimeout(() => {
-                keyElement.classList.remove("active");
-              }, 200)
-            }
+    keyup(event) {
+      this.playSound(event.code.toLowerCase());
+    },
+    playSound(sound) {
+      let audioElement = this.$refs[sound];
+      let keyElement = document.querySelector(`div[data-key='${sound}']`);
+      if (audioElement) {
+        audioElement.currentTime = 0;
+        audioElement.play();
       }
+      if (keyElement) {
+        keyElement.classList.add("active");
+
+        setTimeout(() => {
+          keyElement.classList.remove("active");
+        }, 200);
+      }
+    },
+    composer() {
+      let song = this.$refs.input.value;
+      if (song != "") {
+        let songArray = song.split("");
+        this.playComposition(songArray);
+      }
+    },
+    playComposition(composition){
+      let time_wait = 0;
+      for(let element of composition){
+        setTimeout(() => {
+          this.playSound(`key${element}`);
+        },time_wait);
+        time_wait += 250;
+      }
+    }
   },
 };
 </script>
